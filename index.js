@@ -7,6 +7,7 @@ app.use(bodyParser.json())
 app.use(express.static('images'));
 const config = require('./config.json');
 const sendHelp = require('./utils/sendHelp');
+const gitHubFetch = require('./utils/githubFetch');
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -39,7 +40,7 @@ framework.on('spawn', (bot, id, actorId) => {
 let responded = false;
 
 // Message section:
-framework.hears(/help|what can i (do|say)| what (can|do) you do/i, (bot, trigger) => {
+framework.hears(/help|what can i (do|say)| what (can|do) you do/i, function(bot, trigger){
     console.log('Someone asked for my help, dad bot away!');
     responded = true;
     bot.say(`Hey there, ${trigger.person.displayName}.`)
@@ -48,9 +49,18 @@ framework.hears(/help|what can i (do|say)| what (can|do) you do/i, (bot, trigger
 
 framework.hears(/(whats|what's) the newest (pull request|pr)/i, function (bot, trigger){
     console.log('Gathering data from repo...');
-    console.log(trigger.text);
     responded = true;
-    bot.say('one moment please')
+    const flags = trigger.text.split('=');
+    if(flags.length < 2){
+        bot.say('Looks like you did not provide a owner, or repo flag, ask for help to see an example.')
+    } else {
+        const owner = flags[1].split(' ')[0];
+        const repo = flags[2];
+        console.log(owner, repo)
+        bot.say(`Gathering information from ${owner}'s ${repo} one moment please...`)
+        const data = await gitHubFetch()
+        console.log(data);
+    }
 })
 
 
