@@ -8,6 +8,7 @@ app.use(express.static('images'));
 const config = require('./config.json');
 const sendHelp = require('./utils/sendHelp');
 const gitHubFetch = require('./utils/githubFetch');
+const fetchJokes = require('./utils/fetchJokes');
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -23,7 +24,7 @@ framework.on('spawn', (bot, id, actorId) => {
         bot.webex.people.get(actorId).then((user) => {
             message = `Hi ${user.displayName}, I'm dadbot. You can say "help" to learn more about me.`;
         }).catch(e => {
-            console.error('Failed to lookup user details in framework.on("spawn)');
+            console.error('Failed to lookup user details in framework.on("spawn")');
             message = `Hi hungry, I'm dadbot. You can say "help" to learn more about me.`
         }).finally(() => {
             if(bot.isDirect){
@@ -63,6 +64,11 @@ framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (
     }
 })
 
+framework.hears(/joke|jokes|tell me a joke/i, async function(bot, trigger) {
+    const { joke } = await fetchJokes();
+    responded = true;
+    bot.say(joke)
+});
 
 
 app.get('/', function (req, res) {
