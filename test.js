@@ -5,7 +5,11 @@ const fetchData = async () => {
         headers: {"Accept": "application/vnd.github.v3+json"}
     });
     const data = await res.json();
-    console.log(data)
+    const info = data[data.length - 1];
+    const { body, url } = info;
+    const username = info.user.login;
+    const date = info.created_at.split('T')[0]
+    return { body, url, username, date};
 }
 
 
