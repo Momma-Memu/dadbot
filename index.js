@@ -9,6 +9,7 @@ const config = require('./config.json');
 const sendHelp = require('./utils/sendHelp');
 const gitHubFetch = require('./utils/githubFetch');
 const fetchJokes = require('./utils/fetchJokes');
+const sendPR = require('./utils/sendPR');
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -60,7 +61,7 @@ framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (
         console.log(owner, repo)
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await gitHubFetch(owner, repo)
-        console.log(data);
+        sendPR(bot, data)
     }
 })
 
