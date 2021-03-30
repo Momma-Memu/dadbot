@@ -58,7 +58,7 @@ framework.hears(/(whats|what's) the newest (pull request|pr)/i, function (bot, t
         const repo = flags[2];
         console.log(owner, repo)
         bot.say(`Gathering information from ${owner}'s ${repo} one moment please...`)
-        const data = await gitHubFetch()
+        const data = await gitHubFetch(owner, repo)
         console.log(data);
     }
 })
