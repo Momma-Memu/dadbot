@@ -1,0 +1,6 @@
+{
+    "webhookUrl": "your-locally-hosted-stuffs",
+    "token": "your-bot-token",
+    "port": "whatever-port-you-want, eg, 8080"
+  }
+  
