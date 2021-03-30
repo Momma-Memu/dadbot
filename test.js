@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const gitHubFetch = async (owner, repo) => {
+const fetchData = async () => {
     const res = await fetch('https://api.github.com/repos/OnionQueenMemu/dadbot/pulls', {
         headers: {"Accept": "application/vnd.github.v3+json"}
     });
@@ -8,6 +8,5 @@ const gitHubFetch = async (owner, repo) => {
     console.log(data)
 }
 
-// gitHubFetch('TheOnionQueen', 'dadbot')
 
-module.exports = gitHubFetch;
+fetchData();

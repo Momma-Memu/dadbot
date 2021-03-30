@@ -58,7 +58,7 @@ framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (
         const owner = flags[1].split(' ')[0];
         const repo = flags[2];
         console.log(owner, repo)
-        bot.say(`Gathering information from ${owner}'s ${repo} one moment please...`)
+        bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await gitHubFetch(owner, repo)
         console.log(data);
     }
@@ -73,16 +73,20 @@ framework.hears(/joke|jokes|tell me a joke/i, async function(bot, trigger) {
 
 app.get('/', function (req, res) {
     res.send(`I'm alive.`);
-  });
+});
   
-  app.post('/', webhook(framework));
+app.post('/', webhook(framework));
   
 const server = app.listen(config.port, function () {
     framework.debug('framework listening on port %s', config.port);
 });
+
+app.post('/pulls/notifications', function(req, res, next){
+    console.log(req.body)
+})
   
 process.on('SIGINT', function () {
-    framework.debug('stoppping...');
+    framework.debug('stopping...');
     server.close();
     framework.stop().then(function () {
         process.exit();
