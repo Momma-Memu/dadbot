@@ -47,7 +47,7 @@ framework.hears(/help|what can i (do|say)| what (can|do) you do/i, function(bot,
     .then(() => sendHelp(bot)).catch(e => console.error(`Something went wrong in the help listener: ${e.message}`))
 });
 
-framework.hears(/(whats|what's) the newest (pull request|pr)/i, function (bot, trigger){
+framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (bot, trigger){
     console.log('Gathering data from repo...');
     responded = true;
     const flags = trigger.text.split('=');
