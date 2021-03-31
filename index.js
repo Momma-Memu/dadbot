@@ -6,12 +6,8 @@ const app = express();
 app.use(bodyParser.json())
 app.use(express.static('images'));
 const config = require('./config.json');
-const sendHelp = require('./utils/sendHelp');
-const gitHubFetch = require('./utils/githubFetch');
-const fetchJokes = require('./utils/fetchJokes');
-const sendPR = require('./utils/sendPR');
-const fetchIssue = require('./utils/fetchIssue');
-const sendIssue = require('./utils/sendIssue');
+const { sendHelp, sendIssue, sendPR } = require('./utils/senders');
+const { fetchIssue, fetchJokes, fetchPR } = require('./utils/fetchers')
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -62,7 +58,7 @@ framework.hears(/(whats|what's) the newest (pull request|pr) |newest pr|pr/i, as
         const repo = flags[2];
         console.log(owner, repo)
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
-        const data = await gitHubFetch(owner, repo, bot)
+        const data = await fetchPR(owner, repo, bot)
         if(data === null){
             bot.say('Looks like this repo has no pull requests at all.')
         } else {
