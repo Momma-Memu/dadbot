@@ -7,7 +7,9 @@ app.use(bodyParser.json())
 app.use(express.static('images'));
 const config = require('./config.json');
 const { sendHelp, sendIssue, sendPR } = require('./utils/senders');
-const { fetchIssue, fetchJokes, fetchPR, fetchQuote } = require('./utils/fetchers')
+const { fetchIssue, fetchJokes, fetchPR, fetchQuote } = require('./utils/fetchers');
+const { Dice, defaultDice } = require('./utils/skill');
+const e = require('express');
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -80,7 +82,6 @@ framework.hears(/(whats|what's) the newest issue|newest issue|issue/i, async fun
         console.log(owner, repo)
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await fetchIssue(owner, repo, bot)
-        // console.log(data)
         if(data === null){
             bot.say('Looks like this repo has no issues at all.')
         } else {
@@ -103,6 +104,38 @@ framework.hears(/quote|qod|inspire me|(get me a|get) quote/i, async function(bot
     `**Author**:  ${a}\n` 
     );
 })
+
+framework.hears(/roll dice|dice/i, function(bot, trigger){
+    const flags = trigger.text.split('=');
+    responded = true;
+    console.log(flags)
+    if(flags.length < 3){
+        const { throws } = defaultDice.roll(1);
+        bot.say(`Feeling lucky? You rolled a ${throws}.`)
+    } else {
+        const sides = Number(flags[1].split(' ')[0]);
+        const rolls = Number(flags[2]);
+
+        if(sides > 100 || rolls > 100){
+            bot.say(`Are you messing with me?`);
+            return;
+        }
+
+        if(isNaN(sides) || isNaN(rolls)){
+            bot.say(`Looks like you didn't type a correct roll number or number of sides, 
+            if you need an example try this, "roll dice sides=20 rolls=2"`);
+        } else {
+            const customDice = new Dice(sides);
+            const { throws, sum } = customDice.roll(rolls);
+            bot.say(`Feeling lucky? You rolled ${throws.join(', ')}, and totaled ${sum}.`)
+        }
+    }
+});
+
+framework.hears(/(what's|whats) the meaning to life/i, function(bot, trigger){
+    responded=true;
+    bot.say('Go ask your mombot.')
+});
 
 
 app.get('/', function (req, res) {
