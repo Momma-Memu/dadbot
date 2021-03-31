@@ -45,6 +45,7 @@ let responded = false;
 framework.hears(/help|what can i (do|say)| what (can|do) you do/i, function(bot, trigger){
     console.log('Someone asked for my help, dad bot away!');
     responded = true;
+    console.log(trigger)
     bot.say(`Hey there, ${trigger.person.displayName}.`)
     .then(() => sendHelp(bot)).catch(e => console.error(`Something went wrong in the help listener: ${e.message}`))
 });
@@ -137,6 +138,13 @@ framework.hears(/(what's|whats) the meaning to life/i, function(bot, trigger){
     bot.say('Go ask your mombot.')
 });
 
+framework.hears(/auto notify/, function (bot, trigger) {
+    console.log(trigger)
+    responded = false;
+});
+
+  
+
 
 app.get('/', function (req, res) {
     res.send(`I'm alive.`);
@@ -150,6 +158,9 @@ const server = app.listen(config.port, function () {
 
 app.post('/pulls/notifications', function(req, res, next){
     console.log(req.body)
+    
+    res.send('okay')
+    // res.redirect(307, '/')
 })
   
 process.on('SIGINT', function () {
