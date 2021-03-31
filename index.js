@@ -10,6 +10,8 @@ const sendHelp = require('./utils/sendHelp');
 const gitHubFetch = require('./utils/githubFetch');
 const fetchJokes = require('./utils/fetchJokes');
 const sendPR = require('./utils/sendPR');
+const fetchIssue = require('./utils/fetchIssue');
+const sendIssue = require('./utils/sendIssue');
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -49,11 +51,11 @@ framework.hears(/help|what can i (do|say)| what (can|do) you do/i, function(bot,
     .then(() => sendHelp(bot)).catch(e => console.error(`Something went wrong in the help listener: ${e.message}`))
 });
 
-framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (bot, trigger){
-    console.log('Gathering data from repo...');
+framework.hears(/(whats|what's) the newest (pull request|pr) |newest pr|pr/i, async function (bot, trigger){
+    console.log('Gathering PR data from repo...');
     responded = true;
     const flags = trigger.text.split('=');
-    if(flags.length < 2){
+    if(flags.length < 3){
         bot.say('Looks like you did not provide a owner, or repo flag, ask for help to see an example.')
     } else {
         const owner = flags[1].split(' ')[0];
@@ -61,9 +63,35 @@ framework.hears(/(whats|what's) the newest (pull request|pr)/i, async function (
         console.log(owner, repo)
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await gitHubFetch(owner, repo, bot)
-        sendPR(bot, data)
+        if(data === null){
+            bot.say('Looks like this repo has no pull requests at all.')
+        } else {
+            sendPR(bot, data)
+        }
     }
 })
+
+framework.hears(/(whats|what's) the newest issue|newest issue|issue/i, async function(bot, trigger){
+    console.log('Gathering issue data from repo...');
+    responded = true;
+
+    const flags = trigger.text.split('=');
+    if(flags.length < 3){
+        bot.say('Looks like you did not provide a owner, or repo flag, ask for help to see an example.')
+    } else {
+        const owner = flags[1].split(' ')[0];
+        const repo = flags[2];
+        console.log(owner, repo)
+        bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
+        const data = await fetchIssue(owner, repo, bot)
+        // console.log(data)
+        if(data === null){
+            bot.say('Looks like this repo has no issues at all.')
+        } else {
+            sendIssue(bot, data)
+        }
+    }
+});
 
 framework.hears(/joke|jokes|tell me a joke/i, async function(bot, trigger) {
     const { joke } = await fetchJokes();

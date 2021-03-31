@@ -1,13 +1,15 @@
 const fetch = require('node-fetch');
 
-const gitHubFetch = async (owner, repo, bot) => {
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+const fetchIssue = async (owner, repo, bot) => {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
         headers: {"Accept": "application/vnd.github.v3+json"}
     });
 
     if(res.ok){
         const data = await res.json();
-        const info = data[data.length - 1];
+        // console.log(data)
+        const info = data[0];
+        console.log(info)
         if(info === undefined){
             return null;
         };
@@ -20,4 +22,5 @@ const gitHubFetch = async (owner, repo, bot) => {
     }
 }
 
-module.exports = gitHubFetch;
+
+module.exports = fetchIssue;
