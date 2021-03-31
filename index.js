@@ -7,7 +7,7 @@ app.use(bodyParser.json())
 app.use(express.static('images'));
 const config = require('./config.json');
 const { sendHelp, sendIssue, sendPR } = require('./utils/senders');
-const { fetchIssue, fetchJokes, fetchPR } = require('./utils/fetchers')
+const { fetchIssue, fetchJokes, fetchPR, fetchQuote } = require('./utils/fetchers')
 
 const framework = new frameworkModule(config);
 framework.start();
@@ -94,6 +94,15 @@ framework.hears(/joke|jokes|tell me a joke/i, async function(bot, trigger) {
     responded = true;
     bot.say(joke)
 });
+
+framework.hears(/quote|qod|inspire me|(get me a|get) quote/i, async function(bot, trigger){
+    const { q, a } = await fetchQuote();
+    responded = true;
+    bot.say("markdown", 
+    `**Quote**: ${q} \n` +
+    `**Author**:  ${a}\n` 
+    );
+})
 
 
 app.get('/', function (req, res) {

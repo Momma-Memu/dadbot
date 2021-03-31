@@ -7,9 +7,7 @@ const fetchIssue = async (owner, repo, bot) => {
 
     if(res.ok){
         const data = await res.json();
-        // console.log(data)
         const info = data[0];
-        console.log(info)
         if(info === undefined){
             return null;
         };
@@ -27,7 +25,6 @@ const fetchJokes = async () => {
         headers: { "Accept": "application/json" }
     });
     const data = await response.json();
-    console.log(data)
     return data
 }
 
@@ -51,8 +48,20 @@ const fetchPR = async (owner, repo, bot) => {
     }
 }
 
+const fetchQuote = async () => {
+    const res = await fetch('https://zenquotes.io/api/random');
+    if(res.ok){
+        const data = await res.json();
+        const { q, a } = data[0];
+        return { q, a };
+    } else {
+        return null;
+    }
+};
+
 module.exports = {
     fetchIssue,
     fetchJokes,
-    fetchPR
+    fetchPR,
+    fetchQuote,
 }
