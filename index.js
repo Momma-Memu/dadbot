@@ -21,18 +21,18 @@ framework.on("initialized", function(){
 
 framework.on('spawn', (bot, id, actorId) => {
     if(actorId){
-        let message;
+        let msg;
         bot.webex.people.get(actorId).then((user) => {
-            message = `Hi ${user.displayName}, I'm dadbot. You can say "help" to learn more about me.`;
+            msg = `Hi ${user.displayName}, I'm dadbot. You can say "help" to learn more about me.`;
         }).catch(e => {
             console.error('Failed to lookup user details in framework.on("spawn")');
-            message = `Hi hungry, I'm dadbot. You can say "help" to learn more about me.`
+            msg = `Hi hungry, I'm dadbot. You can say "help" to learn more about me.`
         }).finally(() => {
             if(bot.isDirect){
-                bot.say('markdown', message);
+                bot.say('markdown', msg);
             } else {
                 let botName = bot.person.displayName;
-                message += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* ${botName}.`;
+                msg += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* ${botName}.`;
                 bot.say('markdown', msg)
             };
         });
@@ -139,8 +139,24 @@ framework.hears(/(what's|whats) the meaning to life/i, function(bot, trigger){
 });
 
 framework.hears(/auto notify/, function (bot, trigger) {
-    console.log(trigger)
-    responded = false;
+    console.log('something important')
+    responded = true;
+    let msg;
+    trigger.get(data).then((data) => {
+        console.log(data)
+        msg = `Hi ${data.repo} repo has a new pull request.`;
+    }).catch(e => {
+        msg = `Something went wrong but there's definitely a new pull request. For more information contact my creator
+        on github, https://github.com/OnionQueenMemu`
+    }).finally(() => {
+        if(bot.isDirect){
+            bot.say('markdown', msg);
+        } else {
+            message += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* me.`;
+            bot.say('markdown', msg)
+        };
+    });
+
 });
 
   
@@ -157,10 +173,27 @@ const server = app.listen(config.port, function () {
 });
 
 app.post('/pulls/notifications', function(req, res, next){
+    const { name, owner, html_url } = req.body.repository;
+    const userName = owner.login;
     console.log(req.body)
     
-    res.send('okay')
-    // res.redirect(307, '/')
+    const frameObject = {
+        type: 'message',
+        text: 'notification',
+        args: ['notification'],
+        data: {
+            displayName: userName,
+            repo: name,
+            owner: owner,
+            url: html_url
+        },
+        phrase: /auto notify/
+    }
+
+    req.body = frameObject;
+
+    // res.send('okay')
+    res.redirect(307, '/')
 })
   
 process.on('SIGINT', function () {
