@@ -1,4 +1,5 @@
 const frameworkModule = require('webex-node-bot-framework');
+const Bot = require('webex-node-bot-framework/lib/bot');
 const webhook = require('webex-node-bot-framework/webhook');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -23,7 +24,7 @@ framework.on('spawn', (bot, id, actorId) => {
     if(actorId){
         let msg;
         bot.webex.people.get(actorId).then((user) => {
-            msg = `Hi ${user.displayName}, I'm dadbot. You can say "help" to learn more about me.`;
+            msg = `Hi, I'm dadbot. You can say "help" to learn more about me.`;
         }).catch(e => {
             console.error('Failed to lookup user details in framework.on("spawn")');
             msg = `Hi hungry, I'm dadbot. You can say "help" to learn more about me.`
@@ -134,7 +135,7 @@ framework.hears(/roll dice|dice/i, function(bot, trigger){
 });
 
 framework.hears(/(what's|whats) the meaning to life/i, function(bot, trigger){
-    responded=true;
+    responded = true;
     bot.say('Go ask your mombot.')
 });
 
@@ -159,6 +160,19 @@ framework.hears(/auto notify/, function (bot, trigger) {
 
 });
 
+// framework.hears(/.*/, function (bot, trigger) {
+//     console.log(responded)
+//     // This will fire for any input so only respond if we haven't already
+//     if (!responded) {
+//       console.log(`catch-all handler fired for user input: ${trigger.text}`);
+//       bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
+//         .then(() => sendHelp(bot))
+//         .catch((e) => console.error(`Problem in the unexepected command hander: ${e.message}`));
+//     }
+//     // responded = false;
+// });
+  
+
   
 
 
@@ -172,29 +186,22 @@ const server = app.listen(config.port, function () {
     framework.debug('framework listening on port %s', config.port);
 });
 
-app.post('/pulls/notifications', function(req, res, next){
-    const { name, owner, html_url } = req.body.repository;
-    const userName = owner.login;
-    console.log(req.body)
-    
-    const frameObject = {
-        type: 'message',
-        text: 'notification',
-        args: ['notification'],
-        data: {
-            displayName: userName,
-            repo: name,
-            owner: owner,
-            url: html_url
-        },
-        phrase: /auto notify/
-    }
+app.post('/pulls/notifications', async function(req, res, next){
+    const { html_url } = req.body?.repository;
+    const pull_url = req.body.pull_request?.html_url;
+    const { login } = req.body.pull_request?.user;
+    console.log(html_url, pull_url, login)
 
-    req.body = frameObject;
+    const notifyBot = new Bot(framework)
+    await notifyBot.start()
+    await notifyBot.dm('miahellenbarnes@gmail.com','markdown','Auto Notification: \n' +
+            `1. **Repo**: ${html_url} \n` +
+            `2. **Pull Link**: ${pull_url} \n` +
+            `3. **User**: ${login}`
+    )
 
-    // res.send('okay')
-    res.redirect(307, '/')
-})
+    res.send('okay')
+});
 
   
 process.on('SIGINT', function () {
