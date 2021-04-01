@@ -51,7 +51,7 @@ framework.hears(/help|what can i (do|say)| what (can|do) you do/i, function(bot,
     .then(() => sendHelp(bot)).catch(e => console.error(`Something went wrong in the help listener: ${e.message}`))
 });
 
-framework.hears(/(whats|what's) the newest (pull request|pr) |newest pr|pr/i, async function (bot, trigger){
+framework.hears(/pr/i, async function (bot, trigger){
     console.log('Gathering PR data from repo...');
     responded = true;
     const flags = trigger.text.split('=');
@@ -64,14 +64,14 @@ framework.hears(/(whats|what's) the newest (pull request|pr) |newest pr|pr/i, as
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await fetchPR(owner, repo, bot)
         if(data === null){
-            bot.say('Looks like this repo has no pull requests at all.')
+            bot.say('Looks like this repo has no opened pull requests.')
         } else {
             sendPR(bot, data)
         }
     }
 })
 
-framework.hears(/(whats|what's) the newest issue|newest issue|issue/i, async function(bot, trigger){
+framework.hears(/issue/i, async function(bot, trigger){
     console.log('Gathering issue data from repo...');
     responded = true;
 
@@ -85,7 +85,7 @@ framework.hears(/(whats|what's) the newest issue|newest issue|issue/i, async fun
         bot.say(`Gathering information from ${owner}'s ${repo} repo. One moment please...`)
         const data = await fetchIssue(owner, repo, bot)
         if(data === null){
-            bot.say('Looks like this repo has no issues at all.')
+            bot.say('Looks like this repo has no opened issues.')
         } else {
             sendIssue(bot, data)
         }
@@ -194,11 +194,14 @@ app.post('/pulls/notifications', async function(req, res, next){
 
     const notifyBot = new Bot(framework)
     await notifyBot.start()
-    await notifyBot.dm('miahellenbarnes@gmail.com','markdown','Auto Notification: \n' +
-            `1. **Repo**: ${html_url} \n` +
-            `2. **Pull Link**: ${pull_url} \n` +
-            `3. **User**: ${login}`
-    )
+
+    for(let email of config.autoNotifyList){
+        await notifyBot.dm(email,'markdown','Auto Notification: \n' +
+                `1. **Repo**: ${html_url} \n` +
+                `2. **Pull Link**: ${pull_url} \n` +
+                `3. **User**: ${login}`
+        )
+    }
 
     res.send('okay')
 });

@@ -10,7 +10,7 @@ const sendHelp = (bot) => {
 };
 
 const sendIssue = (bot, data) => {
-    bot.say("markdown", `This is the newest pull request:`, '\n\n ' +
+    bot.say("markdown", `This is the newest issue:`, '\n\n ' +
     `**Username**:  ${data.username}\n` +
     `**Issue Comment**: ${data.body} \n` +
     `**Created At**: ${data.date} \n` +

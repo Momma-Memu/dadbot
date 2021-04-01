@@ -7,13 +7,21 @@ const fetchIssue = async (owner, repo, bot) => {
 
     if(res.ok){
         const data = await res.json();
-        const info = data[0];
+        let info = data[0];
         if(info === undefined){
             return null;
         };
+        for(let resObject of data){
+            if(resObject['pull_request']){
+                info = resObject;
+                break;
+            }
+        }
+
         const { body, html_url } = info;
         const username = info.user.login;
         const date = info.created_at.split('T')[0]
+        console.log(data)
         return { body, html_url, username, date};
     } else {
         bot.say('Oh dear, I cannot find the repository or user you mentioned. Not to be rude, but did you spell it right?')
