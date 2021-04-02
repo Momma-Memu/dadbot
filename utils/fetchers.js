@@ -39,7 +39,7 @@ const fetchPR = async (owner, repo, bot) => {
 
     if(res.ok){
         const data = await res.json();
-        const info = data[data.length - 1];
+        const info = data[0];
 
         // if the response is empty return null as there is no PRs.
         if(info === undefined){
