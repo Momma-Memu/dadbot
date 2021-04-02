@@ -19,7 +19,7 @@ class Dice{
             sum += throws[times];
             times += 1;
         }
-        console.log(throws, sum)
+
         return {throws, sum}
     }   
 }

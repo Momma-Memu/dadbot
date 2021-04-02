@@ -5,7 +5,8 @@ const sendHelp = (bot) => {
         'example: whats the newest pr owner=OnionQueenMemu repo=dadbot \n' +
     '3. **issue** (I can get you the newest issue from any public repo) \n' +
         'example: whats the newest issue owner=OnionQueenMemu repo=dadbot \n' +
-    '4. **quote**: (Need some inspiration? Let me grab you some!)\n' 
+    '4. **quote**: (Need some inspiration? Let me grab you some!)\n' +
+    '5. **roll**: (Take your chances and roll some dice.)\n' 
     );
 };
 
