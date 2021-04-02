@@ -101,7 +101,7 @@ framework.hears(/quote|qod|inspire me|(get me a|get) quote/i, async function(bot
     );
 })
 
-framework.hears(/roll dice|dice/i, function(bot, trigger){
+framework.hears(/roll dice|dice|roll/i, function(bot, trigger){
     responded = true;
     const flags = trigger.text.split('=');
     if(flags.length < 3){
